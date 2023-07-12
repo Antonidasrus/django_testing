@@ -23,7 +23,7 @@ def test_news_order(client):
 
 
 @pytest.mark.django_db
-def test_comments_order(client, get_detail_url):
+def test_comments_order(client, comments_list, get_detail_url):
     url = get_detail_url
     response = client.get(url)
     news = response.context['news']
