@@ -12,10 +12,6 @@ py==1.11.0
 pycodestyle==2.8.0
 pyflakes==2.4.0
 pytest==7.4.0
-pytest-django==4.5.2
-pytest-lazy-fixture==0.6.3
-pytest-pythonpath==0.7.3
-pytest-subtests==0.9.0
 pytils==0.4.1
 pytz==2023.3
 sqlparse==0.4.4
