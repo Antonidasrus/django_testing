@@ -11,22 +11,22 @@ COMMENT_TEXT = 'Текст комментария'
 FORM_DATA = {'text': COMMENT_TEXT}
 NEW_COMMENT_TEXT = 'Новый текст комментария'
 NEW_FORM_DATA = {'text': NEW_COMMENT_TEXT}
+DB_IS_EMPTY = 0
+DB_IS_NOT_EMPTY = 1
 
 
 @pytest.mark.django_db
 def test_anonymous_user_cant_create_comment(client, get_detail_url):
     url = get_detail_url
     client.post(url, FORM_DATA)
-    comments_count = Comment.objects.count()
-    assert comments_count == 0
+    assert Comment.objects.count() == DB_IS_EMPTY
 
 
 def test_user_can_create_comment(author_client, author, get_detail_url, news):
     url = get_detail_url
     response = author_client.post(url, FORM_DATA)
     assertRedirects(response, f'{url}#comments')
-    comments_count = Comment.objects.count()
-    assert comments_count == 1
+    assert Comment.objects.count() == DB_IS_NOT_EMPTY
     comment = Comment.objects.get()
     assert comment.text == COMMENT_TEXT
     assert comment.news == news
@@ -37,24 +37,21 @@ def test_user_cant_use_bad_words(author_client, get_detail_url):
     url = get_detail_url
     bad_words_data = {'text': f'Какой-то текст, {BAD_WORDS[0]}, еще текст'}
     author_client.post(url, data=bad_words_data)
-    comments_count = Comment.objects.count()
-    assert comments_count == 0
+    assert Comment.objects.count() == DB_IS_EMPTY
 
 
 def test_author_can_delete_comment(author_client, comment, get_detail_url):
     url = reverse('news:delete', args=(comment.id,))
     response = author_client.delete(url)
     assertRedirects(response, f'{get_detail_url}#comments')
-    comments_count = Comment.objects.count()
-    assert comments_count == 0
+    assert Comment.objects.count() == DB_IS_EMPTY
 
 
 def test_user_cant_delete_comment_of_another_user(visitor_client, comment):
     url = reverse('news:delete', args=(comment.id,))
     response = visitor_client.delete(url)
     assert response.status_code == HTTPStatus.NOT_FOUND
-    comments_count = Comment.objects.count()
-    assert comments_count == 1
+    assert Comment.objects.count() == DB_IS_NOT_EMPTY
 
 
 def test_author_can_edit_comment(author_client, comment, get_detail_url):

@@ -6,24 +6,24 @@ HOME_URL = reverse('news:home')
 
 
 @pytest.mark.django_db
-def test_news_count(client, news_list):
+def test_news_count(client, lots_of_news):
     response = client.get(HOME_URL)
-    object_list = response.context['object_list']
-    news_count = len(object_list)
+    objects = response.context['object_list']
+    news_count = len(objects)
     assert news_count == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
 @pytest.mark.django_db
 def test_news_order(client):
     response = client.get(HOME_URL)
-    object_list = response.context['object_list']
-    all_dates = [news.date for news in object_list]
+    objects = response.context['object_list']
+    all_dates = [news.date for news in objects]
     sorted_dates = sorted(all_dates, reverse=True)
     assert all_dates == sorted_dates
 
 
 @pytest.mark.django_db
-def test_comments_order(client, comments_list, get_detail_url):
+def test_comments_order(client, comments, get_detail_url):
     url = get_detail_url
     response = client.get(url)
     news = response.context['news']

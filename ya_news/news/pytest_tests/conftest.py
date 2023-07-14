@@ -6,7 +6,15 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 
+from enum import Enum
+
 from news.models import Comment, News
+
+
+class urls(Enum):
+    DETAIL = 'news:detail'
+    EDIT = 'news:edit'
+    DELETE = 'news:delete'
 
 
 @pytest.fixture
@@ -51,7 +59,7 @@ def comment(news, author):
 
 
 @pytest.fixture
-def news_list():
+def lots_of_news():
     today = datetime.today()
     all_news = [
         News(
@@ -65,7 +73,7 @@ def news_list():
 
 
 @pytest.fixture
-def comments_list(news, author):
+def comments(news, author):
     now = timezone.now()
     for index in range(2):
         comment = Comment.objects.create(
@@ -84,14 +92,14 @@ def id_for_news(news):
 
 @pytest.fixture
 def get_detail_url(news):
-    return reverse('news:detail', args=(news.id,))
+    return reverse(urls.DETAIL.value, args=(news.id,))
 
 
 @pytest.fixture
 def get_edit_url(comment):
-    return reverse('news:edit', args=(comment.id,))
+    return reverse(urls.EDIT.value, args=(comment.id,))
 
 
 @pytest.fixture
 def get_delete_url(comment):
-    return reverse('news:delete', args=(comment.id,))
+    return reverse(urls.DELETE.value, args=(comment.id,))
